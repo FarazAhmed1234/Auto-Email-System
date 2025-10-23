@@ -11,16 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Add Student API with duplicate email check
 app.post("/api/add-student", (req, res) => {
   const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
 
-  // ⚠️ Validate required fields
   if (!studentName || !studentEmail || !supervisorName || !supervisorEmail || !studyStartDate) {
     return res.status(400).json({ error: "⚠️ All fields are required!" });
   }
 
-  // 🔍 Check if student email already exists
   const checkQuery = "SELECT * FROM students WHERE student_email = ?";
   db.query(checkQuery, [studentEmail], (err, result) => {
     if (err) {
@@ -47,7 +44,6 @@ app.post("/api/add-student", (req, res) => {
   });
 });
 
-// 📨 Email transporter (Gmail)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -56,7 +52,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ⏰ Daily email scheduler (runs at 9 AM)
 cron.schedule("0 9 * * *", () => {
   console.log("📧 Sending daily emails...");
 
