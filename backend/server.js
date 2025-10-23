@@ -29,11 +29,9 @@ app.post("/api/add-student", (req, res) => {
     }
 
     if (result.length > 0) {
-      // 🚫 Student already exists
       return res.status(400).json({ error: "❌ This student already exists!" });
     }
 
-    // ✅ Insert new student if not found
     const insertQuery = `
       INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date)
       VALUES (?, ?, ?, ?, ?)
