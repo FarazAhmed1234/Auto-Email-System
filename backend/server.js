@@ -57,9 +57,7 @@ app.post("/api/add-student", (req, res) => {
   });
 });
 
-/* ===============================
-   📧 Email Configuration
-=============================== */
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
