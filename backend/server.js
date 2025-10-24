@@ -67,7 +67,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false, // ✅ Prevents self-signed cert errors
+    rejectUnauthorized: false,
   },
 });
 
