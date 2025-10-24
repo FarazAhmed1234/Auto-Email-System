@@ -11,9 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ===============================
-   📘 API: Add New Student
-=============================== */
+
+
 app.post("/api/add-student", (req, res) => {
   const {
     studentName,
