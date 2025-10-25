@@ -12,67 +12,67 @@ app.use(express.json());
 
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false, 
-  },
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
 
 
 app.post("/api/add-student", (req, res) => {
-  const {
-    studentName,
-    studentEmail,
-    supervisorName,
-    supervisorEmail,
-    studyStartDate,
-  } = req.body;
+    const {
+        studentName,
+        studentEmail,
+        supervisorName,
+        supervisorEmail,
+        studyStartDate,
+    } = req.body;
 
-  if (
-    !studentName ||
-    !studentEmail ||
-    !supervisorName ||
-    !supervisorEmail ||
-    !studyStartDate
-  ) {
-    return res.status(400).json({ error: "⚠️ All fields are required!" });
-  }
-
-  const checkQuery = "SELECT * FROM students WHERE student_email = ?";
-  db.query(checkQuery, [studentEmail], (err, result) => {
-    if (err) {
-      console.error("❌ Database error:", err);
-      return res.status(500).json({ error: "Database query failed!" });
+    if (
+        !studentName ||
+        !studentEmail ||
+        !supervisorName ||
+        !supervisorEmail ||
+        !studyStartDate
+    ) {
+        return res.status(400).json({ error: "⚠️ All fields are required!" });
     }
 
-    if (result.length > 0) {
-      return res.status(400).json({ error: "❌ This student already exists!" });
-    }
+    const checkQuery = "SELECT * FROM students WHERE student_email = ?";
+    db.query(checkQuery, [studentEmail], (err, result) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database query failed!" });
+        }
 
-    const insertQuery = `
+        if (result.length > 0) {
+            return res.status(400).json({ error: "❌ This student already exists!" });
+        }
+
+        const insertQuery = `
       INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date)
       VALUES (?, ?, ?, ?, ?)
     `;
 
-    db.query(
-      insertQuery,
-      [studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate],
-      (err) => {
-        if (err) {
-          console.error("❌ Insert failed:", err);
-          return res.status(500).json({ error: "Database insert failed!" });
-        }
+        db.query(
+            insertQuery,
+            [studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate],
+            (err) => {
+                if (err) {
+                    console.error("❌ Insert failed:", err);
+                    return res.status(500).json({ error: "Database insert failed!" });
+                }
 
-        res.json({ message: "✅ Student added successfully!" });
+                res.json({ message: "✅ Student added successfully!" });
 
-      
-        const sendEmail = async () => {
-          try {
-            const message = `
+
+                const sendEmail = async () => {
+                    try {
+                        const message = `
 Hello ${studentName},
 
 This is your hourly study reminder. 📚
@@ -84,34 +84,34 @@ Supervisor Email: ${supervisorEmail}
 Stay focused and have a great study session!
             `;
 
-            await transporter.sendMail({
-              from: process.env.EMAIL_USER,
-              to: studentEmail,
-              subject: "📖 Hourly Study Reminder",
-              text: message,
-            });
+                        await transporter.sendMail({
+                            from: process.env.EMAIL_USER,
+                            to: studentEmail,
+                            subject: "📖 Hourly Study Reminder",
+                            text: message,
+                        });
 
-            await transporter.sendMail({
-              from: process.env.EMAIL_USER,
-              to: supervisorEmail,
-              subject: "👨‍🏫 Hourly Student Reminder",
-              text: `Hello ${supervisorName},\n\nReminder for your student ${studentName}.\n\n${message}`,
-            });
+                        await transporter.sendMail({
+                            from: process.env.EMAIL_USER,
+                            to: supervisorEmail,
+                            subject: "👨‍🏫 Hourly Student Reminder",
+                            text: `Hello ${supervisorName},\n\nReminder for your student ${studentName}.\n\n${message}`,
+                        });
 
-            console.log(`✅ Email sent to ${studentEmail} & ${supervisorEmail}`);
-          } catch (e) {
-            console.error("❌ Email failed:", e.message);
-          }
-        };
+                        console.log(`✅ Email sent to ${studentEmail} & ${supervisorEmail}`);
+                    } catch (e) {
+                        console.error("❌ Email failed:", e.message);
+                    }
+                };
 
-        // ✅ Send first email immediately
-        sendEmail();
+                // ✅ Send first email immediately
+                sendEmail();
 
-        // ✅ Repeat every 1 hour (3600000 ms)
-        setInterval(sendEmail, 60 * 60 * 1000);
-      }
-    );
-  });
+                // ✅ Repeat every 1 hour (3600000 ms)
+                setInterval(sendEmail, 60 * 60 * 1000);
+            }
+        );
+    });
 });
 
 
