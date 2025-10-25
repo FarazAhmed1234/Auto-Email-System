@@ -1,6 +1,3 @@
-
-
-
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -23,7 +20,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // ✅ prevents self-signed cert errors
   },
 });
 
@@ -49,6 +46,7 @@ app.post("/api/add-student", (req, res) => {
     return res.status(400).json({ error: "⚠️ All fields are required!" });
   }
 
+  // ✅ Check if student already exists
   const checkQuery = "SELECT * FROM students WHERE student_email = ?";
   db.query(checkQuery, [studentEmail], (err, result) => {
     if (err) {
@@ -60,6 +58,7 @@ app.post("/api/add-student", (req, res) => {
       return res.status(400).json({ error: "❌ This student already exists!" });
     }
 
+    // ✅ Insert student into DB
     const insertQuery = `
       INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date)
       VALUES (?, ?, ?, ?, ?)
@@ -77,27 +76,27 @@ app.post("/api/add-student", (req, res) => {
         res.json({ message: "✅ Student added successfully!" });
 
         // ===============================
-        // ⏰ Schedule email after 1 hour
+        // 🔁 Send email every 1 hour
         // ===============================
-        setTimeout(async () => {
+        const sendEmail = async () => {
           try {
             const message = `
 Hello ${studentName},
 
-This is your study reminder after 1 hour of registration. 📅
+This is your hourly study reminder. 📚
 Study Start Date: ${new Date(studyStartDate).toDateString()}
 
 Supervisor: ${supervisorName}
 Supervisor Email: ${supervisorEmail}
 
-Have a productive day ahead!
+Stay focused and have a great study session!
             `;
 
             // Send to student
             await transporter.sendMail({
               from: process.env.EMAIL_USER,
               to: studentEmail,
-              subject: "📚 Study Reminder (1 Hour After Registration)",
+              subject: "📖 Hourly Study Reminder",
               text: message,
             });
 
@@ -105,15 +104,21 @@ Have a productive day ahead!
             await transporter.sendMail({
               from: process.env.EMAIL_USER,
               to: supervisorEmail,
-              subject: "👨‍🏫 Student Study Reminder (1 Hour After Registration)",
+              subject: "👨‍🏫 Hourly Student Reminder",
               text: `Hello ${supervisorName},\n\nReminder for your student ${studentName}.\n\n${message}`,
             });
 
-            console.log(`✅ Email sent to ${studentEmail} & ${supervisorEmail} after 1 hour`);
+            console.log(`✅ Email sent to ${studentEmail} & ${supervisorEmail}`);
           } catch (e) {
             console.error("❌ Email failed:", e.message);
           }
-        }, 60 * 60 * 1000); // 1 hour = 3600000 ms
+        };
+
+        // ✅ Send first email immediately
+        sendEmail();
+
+        // ✅ Repeat every 1 hour (3600000 ms)
+        setInterval(sendEmail, 60 * 60 * 1000);
       }
     );
   });
