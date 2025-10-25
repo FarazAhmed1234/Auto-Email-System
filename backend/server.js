@@ -92,7 +92,6 @@ Supervisor Email: ${supervisorEmail}
 Stay focused and have a great study session!
             `;
 
-            // Send to student
             await transporter.sendMail({
               from: process.env.EMAIL_USER,
               to: studentEmail,
@@ -100,7 +99,6 @@ Stay focused and have a great study session!
               text: message,
             });
 
-            // Send to supervisor
             await transporter.sendMail({
               from: process.env.EMAIL_USER,
               to: supervisorEmail,
