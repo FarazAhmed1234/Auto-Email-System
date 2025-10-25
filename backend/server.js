@@ -46,7 +46,6 @@ app.post("/api/add-student", (req, res) => {
     return res.status(400).json({ error: "⚠️ All fields are required!" });
   }
 
-  // ✅ Check if student already exists
   const checkQuery = "SELECT * FROM students WHERE student_email = ?";
   db.query(checkQuery, [studentEmail], (err, result) => {
     if (err) {
