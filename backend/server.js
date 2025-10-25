@@ -75,9 +75,7 @@ app.post("/api/add-student", (req, res) => {
 
         res.json({ message: "✅ Student added successfully!" });
 
-        // ===============================
-        // 🔁 Send email every 1 hour
-        // ===============================
+      
         const sendEmail = async () => {
           try {
             const message = `
