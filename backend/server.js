@@ -10,9 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ==========================
-// 📧 Email Transporter Setup
-// ==========================
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
