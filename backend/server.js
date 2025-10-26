@@ -100,9 +100,7 @@ app.post("/api/add-student", (req, res) => {
   });
 });
 
-// ==========================
-// 📩 Manual Reminder Trigger
-// ==========================
+
 app.post("/api/send-reminders", async (req, res) => {
   console.log("📧 Sending manual reminder emails...");
 
