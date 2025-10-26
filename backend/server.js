@@ -47,9 +47,6 @@ app.get("/api/test-email", async (req, res) => {
   }
 });
 
-// ==========================
-// ➕ Add Student Endpoint
-// ==========================
 app.post("/api/add-student", (req, res) => {
   const {
     studentName,
