@@ -26,7 +26,7 @@ const transporter = nodemailer.createTransport({
 
 // ==========================
 // ➕ Add Student Endpoint
-// ==========================
+
 app.post("/api/add-student", (req, res) => {
   const {
     studentName,
