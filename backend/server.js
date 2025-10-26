@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import db from "./db.js";
 import nodemailer from "nodemailer";
-import cron from "node-cron"; // 👈 Use cron for hourly jobs
+import cron from "node-cron";
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false, // ✅ prevents self-signed cert errors
+    rejectUnauthorized: false, // ✅ Prevents self-signed cert errors
   },
 });
 
@@ -79,7 +79,66 @@ app.post("/api/add-student", (req, res) => {
 });
 
 // ==========================
-// ⏰ Hourly Email Job (All Students)
+// 📩 Send Reminder to All Students (Manual Trigger)
+// ==========================
+app.post("/api/send-reminders", async (req, res) => {
+  console.log("📧 Sending manual reminder emails...");
+
+  const query = "SELECT * FROM students";
+  db.query(query, async (err, students) => {
+    if (err) {
+      console.error("❌ Database error:", err);
+      return res.status(500).json({ error: "Database query failed!" });
+    }
+
+    for (const student of students) {
+      const {
+        student_name,
+        student_email,
+        supervisor_name,
+        supervisor_email,
+        study_start_date,
+      } = student;
+
+      const message = `
+Hello ${student_name},
+
+This is your study reminder. 📚
+Study Start Date: ${new Date(study_start_date).toDateString()}
+
+Supervisor: ${supervisor_name}
+Supervisor Email: ${supervisor_email}
+
+Stay focused and have a great study session!
+      `;
+
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: student_email,
+          subject: "📖 Study Reminder",
+          text: message,
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: supervisor_email,
+          subject: "👨‍🏫 Student Reminder",
+          text: `Hello ${supervisor_name},\n\nReminder for your student ${student_name}.\n\n${message}`,
+        });
+
+        console.log(`✅ Email sent to ${student_email} & ${supervisor_email}`);
+      } catch (e) {
+        console.error("❌ Email failed:", e.message);
+      }
+    }
+
+    res.json({ message: "✅ Reminder emails sent to all students!" });
+  });
+});
+
+// ==========================
+// ⏰ Hourly Email Job (Automatic)
 // ==========================
 cron.schedule("0 * * * *", async () => {
   console.log("📧 Sending hourly reminder emails...");
