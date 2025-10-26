@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import db from "./db.js";
 import nodemailer from "nodemailer";
+import cron from "node-cron"; // 👈 Use cron for hourly jobs
 
 dotenv.config();
 
@@ -24,7 +25,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
+// ==========================
+// ➕ Add Student Endpoint
+// ==========================
 app.post("/api/add-student", (req, res) => {
   const {
     studentName,
@@ -55,7 +58,6 @@ app.post("/api/add-student", (req, res) => {
       return res.status(400).json({ error: "❌ This student already exists!" });
     }
 
-    // ✅ Insert student into DB
     const insertQuery = `
       INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date)
       VALUES (?, ?, ?, ?, ?)
@@ -71,50 +73,67 @@ app.post("/api/add-student", (req, res) => {
         }
 
         res.json({ message: "✅ Student added successfully!" });
-
-      
-        const sendEmail = async () => {
-          try {
-            const message = `
-Hello ${studentName},
-
-This is your hourly study reminder. 📚
-Study Start Date: ${new Date(studyStartDate).toDateString()}
-
-Supervisor: ${supervisorName}
-Supervisor Email: ${supervisorEmail}
-
-Stay focused and have a great study session!
-            `;
-
-            await transporter.sendMail({
-              from: process.env.EMAIL_USER,
-              to: studentEmail,
-              subject: "📖 Hourly Study Reminder",
-              text: message,
-            });
-
-            await transporter.sendMail({
-              from: process.env.EMAIL_USER,
-              to: supervisorEmail,
-              subject: "👨‍🏫 Hourly Student Reminder",
-              text: `Hello ${supervisorName},\n\nReminder for your student ${studentName}.\n\n${message}`,
-            });
-
-            console.log(`✅ Email sent to ${studentEmail} & ${supervisorEmail}`);
-          } catch (e) {
-            console.error("❌ Email failed:", e.message);
-          }
-        };
-
-         sendEmail();
-
-        setInterval(sendEmail, 60 * 60 * 1000);
       }
     );
   });
 });
 
+// ==========================
+// ⏰ Hourly Email Job (All Students)
+// ==========================
+cron.schedule("0 * * * *", async () => {
+  console.log("📧 Sending hourly reminder emails...");
+
+  const query = "SELECT * FROM students";
+  db.query(query, async (err, students) => {
+    if (err) {
+      console.error("❌ Database error:", err);
+      return;
+    }
+
+    for (const student of students) {
+      const {
+        student_name,
+        student_email,
+        supervisor_name,
+        supervisor_email,
+        study_start_date,
+      } = student;
+
+      const message = `
+Hello ${student_name},
+
+This is your hourly study reminder. 📚
+Study Start Date: ${new Date(study_start_date).toDateString()}
+
+Supervisor: ${supervisor_name}
+Supervisor Email: ${supervisor_email}
+
+Stay focused and have a great study session!
+      `;
+
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: student_email,
+          subject: "📖 Hourly Study Reminder",
+          text: message,
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: supervisor_email,
+          subject: "👨‍🏫 Hourly Student Reminder",
+          text: `Hello ${supervisor_name},\n\nReminder for your student ${student_name}.\n\n${message}`,
+        });
+
+        console.log(`✅ Email sent to ${student_email} & ${supervisor_email}`);
+      } catch (e) {
+        console.error("❌ Email failed:", e.message);
+      }
+    }
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
