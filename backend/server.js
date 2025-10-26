@@ -159,9 +159,7 @@ Stay focused and have a great study session!
   });
 });
 
-// ==========================
-// ⏰ Automatic Hourly Reminder
-// ==========================
+
 cron.schedule("0 * * * *", async () => {
   console.log("📧 Sending hourly reminder emails...");
 
