@@ -12,17 +12,39 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================
-// 📧 Email Transporter Setup
+// 📧 Gmail Transporter (Secure Setup)
 // ==========================
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465, // ✅ Secure SSL port
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // Use App Password here
   },
   tls: {
-    rejectUnauthorized: false, // ✅ Prevents self-signed cert errors
+    rejectUnauthorized: false,
   },
+  logger: true,
+  debug: true,
+});
+
+// ==========================
+// 🧪 Test Email Endpoint
+// ==========================
+app.get("/api/test-email", async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // send to yourself
+      subject: "✅ Test Email",
+      text: "This is a test email from your Nodemailer setup.",
+    });
+    res.json({ message: "✅ Test email sent successfully!" });
+  } catch (error) {
+    console.error("❌ Test email failed:", error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ==========================
@@ -79,7 +101,7 @@ app.post("/api/add-student", (req, res) => {
 });
 
 // ==========================
-// 📩 Send Reminder to All Students (Manual Trigger)
+// 📩 Manual Reminder Trigger
 // ==========================
 app.post("/api/send-reminders", async (req, res) => {
   console.log("📧 Sending manual reminder emails...");
@@ -138,7 +160,7 @@ Stay focused and have a great study session!
 });
 
 // ==========================
-// ⏰ Hourly Email Job (Automatic)
+// ⏰ Automatic Hourly Reminder
 // ==========================
 cron.schedule("0 * * * *", async () => {
   console.log("📧 Sending hourly reminder emails...");
@@ -193,6 +215,7 @@ Stay focused and have a great study session!
     }
   });
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
