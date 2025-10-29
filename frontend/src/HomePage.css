@@ -1,22 +1,26 @@
-/* ====== GENERAL PAGE STYLING ====== */
+/* HomePage.css */
+
+/* ======= MAIN CONTAINER ======= */
 .homepage-container {
-  font-family: "Poppins", sans-serif;
-  background: #003366;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
   min-height: 100vh;
-  padding-bottom: 40px;
-  color: white;
 }
 
-/* ====== HEADER SECTION ====== */
+/* ======= HEADER ======= */
 .header {
-  background: #003366;
-  color: white;
-  padding: 20px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  flex-wrap: wrap;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 .logo-section {
@@ -28,154 +32,246 @@
 .logo {
   width: 60px;
   height: 60px;
-  object-fit: contain;
-  background: white;
   border-radius: 50%;
-  padding: 5px;
+  object-fit: cover;
+  border: 2px solid white;
 }
 
 .logo-section h1 {
-  font-size: 1.4rem;
+  margin: 0;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
 }
 
-/* ====== BUTTON SECTION ====== */
 .button-section {
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 
-.button-section button {
-  background: white;
-  color: #003366;
-  border: none;
+/* ======= BUTTONS ======= */
+button {
   padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: 500;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.button-section button:hover {
-  background: #0055aa;
+.button-section button:first-child {
+  background-color: #3498db;
   color: white;
 }
 
+.button-section button:first-child:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
 .reminder-btn {
-  background: #28a745;
+  background-color: #e74c3c;
   color: white;
 }
 
 .reminder-btn:hover {
-  background: #1e7e34;
+  background-color: #c0392b;
+  transform: translateY(-2px);
 }
 
-/* ====== FORM SECTION ====== */
+/* ======= FORM SECTION ======= */
 .form-section {
-  margin: 30px auto;
-  background: white;
+  background-color: white;
   padding: 25px;
-  max-width: 600px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border-left: 4px solid #3498db;
 }
 
-/* ====== TABLE SECTION ====== */
+/* ======= TABLE SECTION ======= */
 .table-section {
-  margin: 40px auto;
-  max-width: 1000px;
-  background: white;
-  padding: 20px;
+  background-color: white;
+  padding: 25px;
   border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .table-section h2 {
-  text-align: center;
+  color: #2c3e50;
   margin-bottom: 20px;
-  color: #003366;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 10px;
 }
 
+/* ======= TABLE STYLES ======= */
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 15px;
 }
 
-table thead {
-  background: #003366;
+thead {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
   color: white;
 }
 
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: center;
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
 }
 
-table tbody tr:nth-child(even) {
-  background: #f8f9fa;
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
-table tbody tr:hover {
-  background: #e9f3ff;
+tbody tr {
+  transition: background-color 0.2s ease;
 }
 
-/* ====== ACTION BUTTONS ====== */
-table button {
-  margin: 2px;
+tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+tbody tr:nth-child(even):hover {
+  background-color: #f1f1f1;
+}
+
+/* ======= ACTION BUTTONS ======= */
+td button {
   padding: 6px 12px;
+  margin: 2px;
   border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 12px;
+  transition: all 0.2s ease;
 }
 
-table button:nth-child(1) {
-  background: #ffc107;
-  color: #333;
-}
-
-table button:nth-child(2) {
-  background: #dc3545;
+td button:first-child {
+  background-color: #f39c12;
   color: white;
 }
 
-table button:nth-child(3) {
-  background: #007bff;
+td button:first-child:hover {
+  background-color: #e67e22;
+}
+
+td button:nth-child(2) {
+  background-color: #e74c3c;
   color: white;
 }
 
-table button:hover {
-  opacity: 0.85;
+td button:nth-child(2):hover {
+  background-color: #c0392b;
 }
 
-/* ====== RESPONSIVE DESIGN ====== */
+td button:last-child {
+  background-color: #27ae60;
+  color: white;
+}
+
+td button:last-child:hover {
+  background-color: #219a52;
+}
+
+/* ======= NO STUDENTS MESSAGE ======= */
+.table-section p {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  padding: 40px;
+  font-size: 1.1rem;
+}
+
+/* ======= RESPONSIVE DESIGN ======= */
 @media (max-width: 768px) {
+  .homepage-container {
+    padding: 10px;
+  }
+  
   .header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    gap: 15px;
+    text-align: center;
   }
-
-  .logo-section h1 {
-    font-size: 1.1rem;
-  }
-
-  table th,
-  table td {
-    font-size: 0.85rem;
-    padding: 8px;
-  }
-
-  .button-section {
+  
+  .logo-section {
     flex-direction: column;
-    width: 100%;
   }
+  
+  .button-section {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .table-section {
+    padding: 15px;
+    overflow-x: auto;
+  }
+  
+  table {
+    font-size: 14px;
+  }
+  
+  th, td {
+    padding: 8px 10px;
+  }
+  
+  td button {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+  }
+}
 
-  .button-section button {
-    width: 100%;
+/* ======= LOADING AND ALERT STYLES ======= */
+.alert {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.alert.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ======= ANIMATIONS ======= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.homepage-container {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.table-section table {
+  animation: fadeIn 0.3s ease-in;
 }
