@@ -32,68 +32,54 @@ const AddStudentForm = () => {
     }
   };
 
-  const handleSendReminders = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/send-reminders");
-      alert("📧 Reminder emails sent to all students!");
-    } catch (error) {
-      alert("❌ Error sending emails: " + error.message);
-    }
-  };
-
   return (
-    <div style={{ padding: "30px", maxWidth: "400px", margin: "auto" }}>
-      <h2>Add Student</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="studentName"
-          placeholder="Student Name"
-          onChange={handleChange}
-          value={formData.studentName}
-          required
-        />
-        <br /><br />
-        <input
-          type="email"
-          name="studentEmail"
-          placeholder="Student Email"
-          onChange={handleChange}
-          value={formData.studentEmail}
-          required
-        />
-        <br /><br />
-        <input
-          type="text"
-          name="supervisorName"
-          placeholder="Supervisor Name"
-          onChange={handleChange}
-          value={formData.supervisorName}
-          required
-        />
-        <br /><br />
-        <input
-          type="email"
-          name="supervisorEmail"
-          placeholder="Supervisor Email"
-          onChange={handleChange}
-          value={formData.supervisorEmail}
-          required
-        />
-        <br /><br />
-        <input
-          type="date"
-          name="studyStartDate"
-          onChange={handleChange}
-          value={formData.studyStartDate}
-          required
-        />
-        <br /><br />
-        <button type="submit">Save Student</button>
-      </form>
-
-      <br />
-     
+    <div className="add-student-page">
+      <div className="add-student-card">
+        <img src="/logo.png" alt="University Logo" className="form-logo" />
+        <h2 className="form-title">Add Student</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="studentName"
+            placeholder="Student Name"
+            onChange={handleChange}
+            value={formData.studentName}
+            required
+          />
+          <input
+            type="email"
+            name="studentEmail"
+            placeholder="Student Email"
+            onChange={handleChange}
+            value={formData.studentEmail}
+            required
+          />
+          <input
+            type="text"
+            name="supervisorName"
+            placeholder="Supervisor Name"
+            onChange={handleChange}
+            value={formData.supervisorName}
+            required
+          />
+          <input
+            type="email"
+            name="supervisorEmail"
+            placeholder="Supervisor Email"
+            onChange={handleChange}
+            value={formData.supervisorEmail}
+            required
+          />
+          <input
+            type="date"
+            name="studyStartDate"
+            onChange={handleChange}
+            value={formData.studyStartDate}
+            required
+          />
+          <button type="submit">Save Student</button>
+        </form>
+      </div>
     </div>
   );
 };
