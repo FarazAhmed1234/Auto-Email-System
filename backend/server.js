@@ -57,7 +57,7 @@ app.post("/api/add-student", (req, res) => {
 // 📋 Get All Students
 // ==========================
 app.get("/api/students", (req, res) => {
-  db.query("SELECT * FROM students", (err, rows) => {
+  db.query("SELECT * FROM stuvdents", (err, rows) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
     res.json(
       rows.map((r) => ({
