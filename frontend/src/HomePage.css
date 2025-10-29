@@ -151,7 +151,7 @@ tbody tr:nth-child(even):hover {
 /* ======= SMALLER ACTION BUTTONS ======= */
 .actions-cell {
   display: flex;
-  gap: 6px;
+  gap: 4px; /* smaller space between buttons */
   flex-wrap: wrap;
 }
 
@@ -163,11 +163,12 @@ tbody tr:nth-child(even):hover {
   font-size: 11px;
   font-weight: 500;
   transition: all 0.2s ease;
-  min-width: 60px;
+  width: 80px; /* your chosen width */
   color: white;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
+
 
 /* Update button - Blue */
 .update-btn {
