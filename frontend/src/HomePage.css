@@ -72,12 +72,12 @@ button {
 }
 
 .reminder-btn {
-  background-color: #e74c3c;
+  background-color: #9b59b6;
   color: white;
 }
 
 .reminder-btn:hover {
-  background-color: #c0392b;
+  background-color: #8e44ad;
   transform: translateY(-2px);
 }
 
@@ -148,42 +148,61 @@ tbody tr:nth-child(even):hover {
   background-color: #f1f1f1;
 }
 
-/* ======= ACTION BUTTONS ======= */
-td button {
-  padding: 6px 12px;
-  margin: 2px;
+/* ======= IMPROVED ACTION BUTTONS ======= */
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 8px 16px;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 500;
   transition: all 0.2s ease;
-}
-
-td button:first-child {
-  background-color: #f39c12;
+  min-width: 80px;
   color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-td button:first-child:hover {
-  background-color: #e67e22;
+/* Update button - Blue */
+.update-btn {
+  background-color: #3498db;
+  border: 1px solid #2980b9;
 }
 
-td button:nth-child(2) {
+.update-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+}
+
+/* Delete button - Red */
+.delete-btn {
   background-color: #e74c3c;
-  color: white;
+  border: 1px solid #c0392b;
 }
 
-td button:nth-child(2):hover {
+.delete-btn:hover {
   background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
 }
 
-td button:last-child {
+/* Email button - Green */
+.email-btn {
   background-color: #27ae60;
-  color: white;
+  border: 1px solid #219a52;
 }
 
-td button:last-child:hover {
+.email-btn:hover {
   background-color: #219a52;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
 }
 
 /* ======= NO STUDENTS MESSAGE ======= */
@@ -229,10 +248,14 @@ td button:last-child:hover {
     padding: 8px 10px;
   }
   
-  td button {
-    display: block;
-    width: 100%;
-    margin: 5px 0;
+  .actions-cell {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .action-btn {
+    min-width: 100%;
+    margin: 2px 0;
   }
 }
 
