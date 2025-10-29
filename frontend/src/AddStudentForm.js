@@ -93,18 +93,7 @@ const AddStudentForm = () => {
       </form>
 
       <br />
-      <button
-        onClick={handleSendReminders}
-        style={{
-          backgroundColor: "green",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "5px",
-        }}
-      >
-        Send Reminder Emails
-      </button>
+     
     </div>
   );
 };

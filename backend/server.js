@@ -99,6 +99,35 @@ app.post("/api/send-email", async (req, res) => {
   });
 });
 
+
+
+// ==========================
+// ✏️ Update Student
+// ==========================
+app.put("/api/students/:id", (req, res) => {
+  const { id } = req.params;
+  const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
+
+  if (!studentName || !studentEmail || !supervisorName || !supervisorEmail || !studyStartDate)
+    return res.status(400).json({ error: "⚠️ All fields are required!" });
+
+  const updateQuery = `
+    UPDATE students 
+    SET student_name = ?, student_email = ?, supervisor_name = ?, supervisor_email = ?, study_start_date = ?
+    WHERE id = ?
+  `;
+
+  db.query(
+    updateQuery,
+    [studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate, id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Database update failed" });
+      res.json({ message: "✅ Student updated successfully!" });
+    }
+  );
+});
+
+
 // ==========================
 // 📩 Send Reminder to All Students
 // ==========================
