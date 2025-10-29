@@ -103,15 +103,18 @@ const HomePage = () => {
                   <td>{s.supervisorName}</td>
                   <td>{s.supervisorEmail}</td>
                   <td>{s.studyStartDate}</td>
-                  <td>
-                    <button onClick={() => alert("Update feature coming soon!")}>
-                      Update
-                    </button>
-                    <button onClick={() => handleDelete(s.id)}>Delete</button>
-                    <button onClick={() => handleSendEmail(s.studentEmail)}>
-                      Send Email
-                    </button>
-                  </td>
+                 <td>
+  <button className="action-btn update-btn" onClick={() => alert("Update feature coming soon!")}>
+    Update
+  </button>
+  <button className="action-btn delete-btn" onClick={() => handleDelete(s.id)}>
+    Delete
+  </button>
+  <button className="action-btn email-btn" onClick={() => handleSendEmail(s.studentEmail)}>
+    Email
+  </button>
+</td>
+
                 </tr>
               ))}
             </tbody>

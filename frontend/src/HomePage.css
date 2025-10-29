@@ -148,25 +148,25 @@ tbody tr:nth-child(even):hover {
   background-color: #f1f1f1;
 }
 
-/* ======= IMPROVED ACTION BUTTONS ======= */
+/* ======= SMALLER ACTION BUTTONS ======= */
 .actions-cell {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .action-btn {
-  padding: 8px 16px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   transition: all 0.2s ease;
-  min-width: 80px;
+  min-width: 60px;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 /* Update button - Blue */
@@ -178,7 +178,7 @@ tbody tr:nth-child(even):hover {
 .update-btn:hover {
   background-color: #2980b9;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 1px 3px rgba(52, 152, 219, 0.3);
 }
 
 /* Delete button - Red */
@@ -190,7 +190,7 @@ tbody tr:nth-child(even):hover {
 .delete-btn:hover {
   background-color: #c0392b;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+  box-shadow: 0 1px 3px rgba(231, 76, 60, 0.3);
 }
 
 /* Email button - Green */
@@ -202,7 +202,7 @@ tbody tr:nth-child(even):hover {
 .email-btn:hover {
   background-color: #219a52;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+  box-shadow: 0 1px 3px rgba(39, 174, 96, 0.3);
 }
 
 /* ======= NO STUDENTS MESSAGE ======= */
@@ -250,12 +250,14 @@ tbody tr:nth-child(even):hover {
   
   .actions-cell {
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
   }
   
   .action-btn {
     min-width: 100%;
-    margin: 2px 0;
+    margin: 1px 0;
+    padding: 5px 10px;
+    font-size: 10px;
   }
 }
 
