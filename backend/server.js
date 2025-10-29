@@ -101,9 +101,7 @@ app.post("/api/send-email", async (req, res) => {
 
 
 
-// ==========================
 // ✏️ Update Student
-// ==========================
 app.put("/api/students/:id", (req, res) => {
   const { id } = req.params;
   const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
