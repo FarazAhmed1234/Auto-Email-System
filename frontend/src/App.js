@@ -1,11 +1,10 @@
 import React from "react";
-import AddStudentForm from "./AddStudentForm";
+import HomePage from "./HomePage"; // Import the new homepage component
 
 function App() {
   return (
     <div>
-      <h1>📧 Auto Email System</h1>
-      <AddStudentForm />
+      <HomePage />
     </div>
   );
 }

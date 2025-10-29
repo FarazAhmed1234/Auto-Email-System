@@ -12,157 +12,128 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================
-// 📧 Email Transporter (Initial Test Only)
+// 📧 Email Transporter (Check at Startup)
 // ==========================
-const testTransporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // use SSL
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  tls: {
-    rejectUnauthorized: false,
-  },
+  tls: { rejectUnauthorized: false },
 });
 
-// Verify SMTP connection at startup
-testTransporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP Connection Error:", error);
-  } else {
-    console.log("✅ SMTP Server Ready to Send Emails");
-  }
+transporter.verify((error) => {
+  if (error) console.error("❌ SMTP Connection Error:", error);
+  else console.log("✅ SMTP Ready to Send Emails");
 });
 
 // ==========================
-// ➕ Add Student Endpoint
+// ➕ Add Student
 // ==========================
 app.post("/api/add-student", (req, res) => {
-  const {
-    studentName,
-    studentEmail,
-    supervisorName,
-    supervisorEmail,
-    studyStartDate,
-  } = req.body;
+  const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
 
-  if (
-    !studentName ||
-    !studentEmail ||
-    !supervisorName ||
-    !supervisorEmail ||
-    !studyStartDate
-  ) {
+  if (!studentName || !studentEmail || !supervisorName || !supervisorEmail || !studyStartDate)
     return res.status(400).json({ error: "⚠️ All fields are required!" });
-  }
 
-  const checkQuery = "SELECT * FROM students WHERE student_email = ?";
-  db.query(checkQuery, [studentEmail], (err, result) => {
-    if (err) {
-      console.error("❌ Database error:", err);
-      return res.status(500).json({ error: "Database query failed!" });
-    }
+  const check = "SELECT * FROM students WHERE student_email = ?";
+  db.query(check, [studentEmail], (err, result) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (result.length > 0) return res.status(400).json({ error: "Student already exists!" });
 
-    if (result.length > 0) {
-      return res.status(400).json({ error: "❌ This student already exists!" });
-    }
+    const insert =
+      "INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date) VALUES (?, ?, ?, ?, ?)";
+    db.query(insert, [studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate], (err2) => {
+      if (err2) return res.status(500).json({ error: "Insert failed" });
+      res.json({ message: "✅ Student added successfully!" });
+    });
+  });
+});
 
-    const insertQuery = `
-      INSERT INTO students (student_name, student_email, supervisor_name, supervisor_email, study_start_date)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-
-    db.query(
-      insertQuery,
-      [studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate],
-      (err) => {
-        if (err) {
-          console.error("❌ Insert failed:", err);
-          return res.status(500).json({ error: "Database insert failed!" });
-        }
-
-        res.json({ message: "✅ Student added successfully!" });
-      }
+// ==========================
+// 📋 Get All Students
+// ==========================
+app.get("/api/students", (req, res) => {
+  db.query("SELECT * FROM students", (err, rows) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    res.json(
+      rows.map((r) => ({
+        id: r.id,
+        studentName: r.student_name,
+        studentEmail: r.student_email,
+        supervisorName: r.supervisor_name,
+        supervisorEmail: r.supervisor_email,
+        studyStartDate: r.study_start_date,
+      }))
     );
   });
 });
 
 // ==========================
-// 📩 Manual Reminder Endpoint
+// 🗑️ Delete Student
+// ==========================
+app.delete("/api/students/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM students WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ error: "Delete failed" });
+    res.json({ message: "🗑️ Student deleted successfully!" });
+  });
+});
+
+// ==========================
+// ✉️ Send Email to One Student
+// ==========================
+app.post("/api/send-email", async (req, res) => {
+  const { email } = req.body;
+
+  db.query("SELECT * FROM students WHERE student_email = ?", [email], async (err, result) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (result.length === 0) return res.status(404).json({ error: "Student not found" });
+
+    const s = result[0];
+    await sendEmail(s, "manual");
+    res.json({ message: `📧 Email sent to ${email}` });
+  });
+});
+
+// ==========================
+// 📩 Send Reminder to All Students
 // ==========================
 app.post("/api/send-reminders", async (req, res) => {
-  console.log("📧 Sending manual reminder emails...");
+  db.query("SELECT * FROM students", async (err, students) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
 
-  const query = "SELECT * FROM students";
-  db.query(query, async (err, students) => {
-    if (err) {
-      console.error("❌ Database error:", err);
-      return res.status(500).json({ error: "Database query failed!" });
-    }
-
-    for (const student of students) {
-      await sendReminderEmails(student, "manual");
-    }
-
-    res.json({ message: "✅ Reminder emails sent to all students!" });
+    for (const s of students) await sendEmail(s, "manual");
+    res.json({ message: "📩 Reminder emails sent to all students!" });
   });
 });
 
 // ==========================
-// ⏰ Cron Job - Every 10 Minutes Daily
+// ⏰ Auto Cron Job (Every 10 Minutes)
 // ==========================
-cron.schedule("*/10 * * * *", async () => {
-  console.log("📧 Sending reminder emails every 10 minutes...");
-
-  const query = "SELECT * FROM students";
-  db.query(query, async (err, students) => {
-    if (err) {
-      console.error("❌ Database error:", err);
-      return;
-    }
-
-    for (const student of students) {
-      await sendReminderEmails(student, "auto");
-    }
+cron.schedule("*/10 * * * *", () => {
+  db.query("SELECT * FROM students", async (err, students) => {
+    if (err) return;
+    for (const s of students) await sendEmail(s, "auto");
   });
 });
 
 // ==========================
-// 📨 Function to Send Emails
+// ✉️ Send Email Function
 // ==========================
-async function sendReminderEmails(student, type) {
-  const {
-    student_name,
-    student_email,
-    supervisor_name,
-    supervisor_email,
-    study_start_date,
-  } = student;
-
-  // ✅ Create a fresh transporter each time (prevents socket timeout)
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: { rejectUnauthorized: false },
-  });
-
+async function sendEmail(student, type) {
+  const { student_name, student_email, supervisor_name, supervisor_email, study_start_date } = student;
   const message = `
 Hello ${student_name},
 
-This is your study reminder. 📚
+This is your study reminder.
 Study Start Date: ${new Date(study_start_date).toDateString()}
 
 Supervisor: ${supervisor_name}
 Supervisor Email: ${supervisor_email}
-
-Stay focused and have a great study session!
   `;
 
   try {
@@ -176,8 +147,8 @@ Stay focused and have a great study session!
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: supervisor_email,
-      subject: type === "auto" ? "👨‍🏫 Auto Student Reminder" : "👨‍🏫 Student Reminder",
-      text: `Hello ${supervisor_name},\n\nReminder for your student ${student_name}.\n\n${message}`,
+      subject: "👨‍🏫 Student Study Reminder",
+      text: `Hello ${supervisor_name},\n\nYour student ${student_name} received a reminder.\n\n${message}`,
     });
 
     console.log(`✅ Email sent to ${student_email} & ${supervisor_email}`);
@@ -186,5 +157,6 @@ Stay focused and have a great study session!
   }
 }
 
+// ==========================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

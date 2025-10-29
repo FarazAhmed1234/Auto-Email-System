@@ -1,0 +1,181 @@
+/* ====== GENERAL PAGE STYLING ====== */
+.homepage-container {
+  font-family: "Poppins", sans-serif;
+  background: #003366;
+  min-height: 100vh;
+  padding-bottom: 40px;
+  color: white;
+}
+
+/* ====== HEADER SECTION ====== */
+.header {
+  background: #003366;
+  color: white;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  flex-wrap: wrap;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.logo-section h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ====== BUTTON SECTION ====== */
+.button-section {
+  display: flex;
+  gap: 10px;
+}
+
+.button-section button {
+  background: white;
+  color: #003366;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-section button:hover {
+  background: #0055aa;
+  color: white;
+}
+
+.reminder-btn {
+  background: #28a745;
+  color: white;
+}
+
+.reminder-btn:hover {
+  background: #1e7e34;
+}
+
+/* ====== FORM SECTION ====== */
+.form-section {
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ====== TABLE SECTION ====== */
+.table-section {
+  margin: 40px auto;
+  max-width: 1000px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #003366;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table thead {
+  background: #003366;
+  color: white;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+table tbody tr:hover {
+  background: #e9f3ff;
+}
+
+/* ====== ACTION BUTTONS ====== */
+table button {
+  margin: 2px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+table button:nth-child(1) {
+  background: #ffc107;
+  color: #333;
+}
+
+table button:nth-child(2) {
+  background: #dc3545;
+  color: white;
+}
+
+table button:nth-child(3) {
+  background: #007bff;
+  color: white;
+}
+
+table button:hover {
+  opacity: 0.85;
+}
+
+/* ====== RESPONSIVE DESIGN ====== */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .logo-section h1 {
+    font-size: 1.1rem;
+  }
+
+  table th,
+  table td {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .button-section {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .button-section button {
+    width: 100%;
+  }
+}
