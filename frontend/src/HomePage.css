@@ -151,7 +151,7 @@ tbody tr:nth-child(even):hover {
 /* ======= SMALLER ACTION BUTTONS ======= */
 .actions-cell {
   display: flex;
-  gap: 4px; /* smaller space between buttons */
+  gap: 8px; /* smaller space between buttons */
   flex-wrap: wrap;
 }
 
@@ -173,6 +173,8 @@ tbody tr:nth-child(even):hover {
 /* Update button - Blue */
 .update-btn {
   background-color: #3498db;
+      margin-right: 6px;
+
   border: 1px solid #2980b9;
 }
 
@@ -185,6 +187,8 @@ tbody tr:nth-child(even):hover {
 /* Delete button - Red */
 .delete-btn {
   background-color: #e74c3c;
+      margin-right: 6px;
+
   border: 1px solid #c0392b;
 }
 
