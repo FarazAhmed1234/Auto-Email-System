@@ -131,6 +131,8 @@ const HomePage = () => {
       <div className="welcome-text">
   <h2>Welcome to the Directorate of Postgraduate Studies</h2>
 </div>
+<br />
+
 
       {/* ======= ADD STUDENT FORM ======= */}
       {showForm ? (
