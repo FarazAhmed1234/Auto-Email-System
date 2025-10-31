@@ -20,14 +20,12 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-/* ====== Logo ====== */
 .form-logo {
   width: 80px;
   margin-bottom: 10px;
   border-radius: 50%;
 }
 
-/* ====== Title ====== */
 .form-title {
   color: #fff;
   margin-bottom: 20px;
@@ -44,7 +42,6 @@
   outline: none;
 }
 
-/* ====== Button ====== */
 .add-student-card button {
   background-color: #f57c00;
   color: white;
