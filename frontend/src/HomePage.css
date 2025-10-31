@@ -7,6 +7,17 @@
   padding: 30px;
 }
 
+.welcome-text {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.welcome-text h2 {
+  font-size: 26px;
+  color: #222;
+  font-weight: 600;
+}
+
 /* ======= HEADER ======= */
 .header {
   display: flex;

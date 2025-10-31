@@ -62,7 +62,7 @@ const HomePage = () => {
         `http://localhost:5000/api/students/${editingStudent.id}`,
         editingStudent
       );
-      toast.success("✅ Student updated successfully!");
+      toast.success(" Student updated successfully!");
       setEditingStudent(null);
       fetchStudents();
     } catch (error) {
@@ -99,6 +99,12 @@ const HomePage = () => {
     }
   };
 
+  // ===== When student added from form =====
+  const handleStudentAdded = () => {
+    fetchStudents(); // refresh table
+    setShowForm(false); // close form automatically
+  };
+
   return (
     <div className="homepage-container">
       {/* ======= HEADER ======= */}
@@ -107,6 +113,10 @@ const HomePage = () => {
           <img src="/logo.png" alt="University Logo" className="logo" />
           <h1>Shah Abdul Latif University, Khairpur</h1>
         </div>
+
+        {/* ======= WELCOME SECTION ======= */}
+
+
 
         <div className="button-section">
           <button onClick={() => setShowForm(!showForm)}>
@@ -118,142 +128,143 @@ const HomePage = () => {
         </div>
       </header>
 
+      <div className="welcome-text">
+  <h2>Welcome to the Directorate of Postgraduate Studies</h2>
+</div>
+
       {/* ======= ADD STUDENT FORM ======= */}
-      {showForm && (
-        <AddStudentForm onStudentAdded={fetchStudents} />
-
-      )}
-
-      {/* ======= STUDENT TABLE ======= */}
-      <div className="table-section">
-        <h2>All Students</h2>
-        {students.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Supervisor</th>
-                <th>Supervisor Email</th>
-                <th>Start Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((s) => (
-                <tr key={s.id}>
-                  {editingStudent && editingStudent.id === s.id ? (
-                    <>
-                      <td>
-                        <input
-                          type="text"
-                          name="studentName"
-                          value={editingStudent.studentName}
-                          onChange={handleInputChange}
-                          className="edit-input"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="email"
-                          name="studentEmail"
-                          value={editingStudent.studentEmail}
-                          onChange={handleInputChange}
-                          className="edit-input"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="supervisorName"
-                          value={editingStudent.supervisorName}
-                          onChange={handleInputChange}
-                          className="edit-input"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="email"
-                          name="supervisorEmail"
-                          value={editingStudent.supervisorEmail}
-                          onChange={handleInputChange}
-                          className="edit-input"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="studyStartDate"
-                          value={editingStudent.studyStartDate}
-                          onChange={handleInputChange}
-                          className="edit-input"
-                        />
-                      </td>
-                      <td>
-                        <div className="actions-cell">
-                          <button
-                            className="action-btn save-btn"
-                            onClick={handleSaveUpdate}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="action-btn cancel-btn"
-                            onClick={handleCancelEdit}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{s.studentName}</td>
-                      <td>{s.studentEmail}</td>
-                      <td>{s.supervisorName}</td>
-                      <td>{s.supervisorEmail}</td>
-                      <td>{s.studyStartDate}</td>
-                      <td>
-                        <div className="actions-cell">
-                          <button
-                            className="action-btn update-btn"
-                            onClick={() => handleEdit(s)}
-                          >
-                            Update
-                          </button>
-                          <button
-                            className="action-btn delete-btn"
-                            onClick={() => handleDelete(s.id)}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            className="action-btn email-btn"
-                            onClick={() => handleSendEmail(s.studentEmail)}
-                          >
-                            Email
-                          </button>
-                        </div>
-                      </td>
-                    </>
-                  )}
+      {showForm ? (
+        <AddStudentForm onStudentAdded={handleStudentAdded} />
+      ) : (
+        // ======= STUDENT TABLE =======
+        <div className="table-section">
+          <h2>All Students</h2>
+          {students.length > 0 ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Supervisor</th>
+                  <th>Supervisor Email</th>
+                  <th>Start Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No students found.</p>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {students.map((s) => (
+                  <tr key={s.id}>
+                    {editingStudent && editingStudent.id === s.id ? (
+                      <>
+                        <td>
+                          <input
+                            type="text"
+                            name="studentName"
+                            value={editingStudent.studentName}
+                            onChange={handleInputChange}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="email"
+                            name="studentEmail"
+                            value={editingStudent.studentEmail}
+                            onChange={handleInputChange}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            name="supervisorName"
+                            value={editingStudent.supervisorName}
+                            onChange={handleInputChange}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="email"
+                            name="supervisorEmail"
+                            value={editingStudent.supervisorEmail}
+                            onChange={handleInputChange}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="date"
+                            name="studyStartDate"
+                            value={editingStudent.studyStartDate}
+                            onChange={handleInputChange}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <div className="actions-cell">
+                            <button
+                              className="action-btn save-btn"
+                              onClick={handleSaveUpdate}
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="action-btn cancel-btn"
+                              onClick={handleCancelEdit}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{s.studentName}</td>
+                        <td>{s.studentEmail}</td>
+                        <td>{s.supervisorName}</td>
+                        <td>{s.supervisorEmail}</td>
+                        <td>{s.studyStartDate}</td>
+                        <td>
+                          <div className="actions-cell">
+                            <button
+                              className="action-btn update-btn"
+                              onClick={() => handleEdit(s)}
+                            >
+                              Update
+                            </button>
+                            <button
+                              className="action-btn delete-btn"
+                              onClick={() => handleDelete(s.id)}
+                            >
+                              Delete
+                            </button>
+                            <button
+                              className="action-btn email-btn"
+                              onClick={() => handleSendEmail(s.studentEmail)}
+                            >
+                              Email
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No students found.</p>
+          )}
+        </div>
+      )}
 
       {/* ===== Toast Notification Container ===== */}
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop={false}
         closeOnClick
-        pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="colored"
