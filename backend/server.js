@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================
-// 📧 Email Transporter (Check at Startup)
+// 📧 Email Transporter
 // ==========================
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -35,6 +35,7 @@ transporter.verify((error) => {
 // ==========================
 app.post("/api/add-student", (req, res) => {
   const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
+  console.log("🧾 Received data:", req.body);
 
   if (!studentName || !studentEmail || !supervisorName || !supervisorEmail || !studyStartDate)
     return res.status(400).json({ error: "⚠️ All fields are required!" });
@@ -57,7 +58,7 @@ app.post("/api/add-student", (req, res) => {
 // 📋 Get All Students
 // ==========================
 app.get("/api/students", (req, res) => {
-  db.query("SELECT * FROM stuvdents", (err, rows) => {
+  db.query("SELECT * FROM students", (err, rows) => { // fixed typo: stuvdents → students
     if (err) return res.status(500).json({ error: "Database query failed" });
     res.json(
       rows.map((r) => ({
@@ -84,24 +85,8 @@ app.delete("/api/students/:id", (req, res) => {
 });
 
 // ==========================
-// ✉️ Send Email to One Student
-// ==========================
-app.post("/api/send-email", async (req, res) => {
-  const { email } = req.body;
-
-  db.query("SELECT * FROM students WHERE student_email = ?", [email], async (err, result) => {
-    if (err) return res.status(500).json({ error: "Database error" });
-    if (result.length === 0) return res.status(404).json({ error: "Student not found" });
-
-    const s = result[0];
-    await sendEmail(s, "manual");
-    res.json({ message: `📧 Email sent to ${email}` });
-  });
-});
-
-
-
 // ✏️ Update Student
+// ==========================
 app.put("/api/students/:id", (req, res) => {
   const { id } = req.params;
   const { studentName, studentEmail, supervisorName, supervisorEmail, studyStartDate } = req.body;
@@ -123,29 +108,6 @@ app.put("/api/students/:id", (req, res) => {
       res.json({ message: "✅ Student updated successfully!" });
     }
   );
-});
-
-
-// ==========================
-// 📩 Send Reminder to All Students
-// ==========================
-app.post("/api/send-reminders", async (req, res) => {
-  db.query("SELECT * FROM students", async (err, students) => {
-    if (err) return res.status(500).json({ error: "Database query failed" });
-
-    for (const s of students) await sendEmail(s, "manual");
-    res.json({ message: "📩 Reminder emails sent to all students!" });
-  });
-});
-
-// ==========================
-// ⏰ Auto Cron Job (Every 10 Minutes)
-// ==========================
-cron.schedule("*/10 * * * *", () => {
-  db.query("SELECT * FROM students", async (err, students) => {
-    if (err) return;
-    for (const s of students) await sendEmail(s, "auto");
-  });
 });
 
 // ==========================
@@ -185,5 +147,26 @@ Supervisor Email: ${supervisor_email}
 }
 
 // ==========================
+// 📩 Send Reminders to All Students
+// ==========================
+app.post("/api/send-reminders", (req, res) => {
+  db.query("SELECT * FROM students", async (err, students) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+
+    for (const s of students) await sendEmail(s, "manual");
+    res.json({ message: "📩 Reminder emails sent to all students!" });
+  });
+});
+
+// ==========================
+// ⏰ Auto Cron Job
+// ==========================
+cron.schedule("*/10 * * * *", () => {
+  db.query("SELECT * FROM students", async (err, students) => {
+    if (err) return;
+    for (const s of students) await sendEmail(s, "auto");
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

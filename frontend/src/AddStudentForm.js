@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./AddStudentForm.css";
 import axios from "axios";
 
-const AddStudentForm = () => {
+const AddStudentForm = ({ onStudentAdded }) => {
   const [formData, setFormData] = useState({
     studentName: "",
     studentEmail: "",
@@ -18,8 +18,8 @@ const AddStudentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/add-student", formData);
-      alert("✅ Student added successfully!");
+      const res = await axios.post("http://localhost:5000/api/add-student", formData);
+      alert(res.data.message);
       setFormData({
         studentName: "",
         studentEmail: "",
@@ -27,59 +27,28 @@ const AddStudentForm = () => {
         supervisorEmail: "",
         studyStartDate: "",
       });
+      onStudentAdded(); // refresh student list
     } catch (error) {
-      alert("❌ Error: " + error.message);
+      if (error.response && error.response.data.error) {
+        alert("❌ " + error.response.data.error);
+      } else {
+        alert("❌ Error: " + error.message);
+      }
     }
   };
 
   return (
-    <div className="add-student-page">
-      <div className="add-student-card">
-        <img src="/logo.png" alt="University Logo" className="form-logo" />
-        <h2 className="form-title">Add Student</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="studentName"
-            placeholder="Student Name"
-            onChange={handleChange}
-            value={formData.studentName}
-            required
-          />
-          <input
-            type="email"
-            name="studentEmail"
-            placeholder="Student Email"
-            onChange={handleChange}
-            value={formData.studentEmail}
-            required
-          />
-          <input
-            type="text"
-            name="supervisorName"
-            placeholder="Supervisor Name"
-            onChange={handleChange}
-            value={formData.supervisorName}
-            required
-          />
-          <input
-            type="email"
-            name="supervisorEmail"
-            placeholder="Supervisor Email"
-            onChange={handleChange}
-            value={formData.supervisorEmail}
-            required
-          />
-          <input
-            type="date"
-            name="studyStartDate"
-            onChange={handleChange}
-            value={formData.studyStartDate}
-            required
-          />
-          <button type="submit">Save Student</button>
-        </form>
-      </div>
+    <div className="add-student-card">
+      <img src="/logo.png" alt="University Logo" className="form-logo" />
+      <h2>Add Student</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="studentName" placeholder="Student Name" value={formData.studentName} onChange={handleChange} required />
+        <input type="email" name="studentEmail" placeholder="Student Email" value={formData.studentEmail} onChange={handleChange} required />
+        <input type="text" name="supervisorName" placeholder="Supervisor Name" value={formData.supervisorName} onChange={handleChange} required />
+        <input type="email" name="supervisorEmail" placeholder="Supervisor Email" value={formData.supervisorEmail} onChange={handleChange} required />
+        <input type="date" name="studyStartDate" value={formData.studyStartDate} onChange={handleChange} required />
+        <button type="submit">Save Student</button>
+      </form>
     </div>
   );
 };
