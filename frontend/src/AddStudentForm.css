@@ -27,14 +27,12 @@
   border-radius: 50%;
 }
 
-/* ====== Title ====== */
 .form-title {
   color: #fff;
   margin-bottom: 20px;
   font-size: 22px;
 }
 
-/* ====== Inputs ====== */
 .add-student-card input {
   width: 100%;
   padding: 10px;
