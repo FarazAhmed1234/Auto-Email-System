@@ -100,7 +100,6 @@ app.put("/api/students/:id", (req, res) => {
   );
 });
 
-// ==========================
 app.delete("/api/students/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM students WHERE id = ?", [id], (err) => {
