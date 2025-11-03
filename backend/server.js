@@ -54,40 +54,13 @@ app.post("/api/add-student", (req, res) => {
   });
 });
 
-
-// ==========================
-// 📤 Send Email to Single Student
-// ==========================
-app.post("/api/send-email", (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ error: "⚠️ Email is required!" });
-  }
-
-  const query = "SELECT * FROM students WHERE student_email = ?";
-  db.query(query, [email], async (err, result) => {
-    if (err) return res.status(500).json({ error: "Database error" });
-    if (result.length === 0)
-      return res.status(404).json({ error: "Student not found!" });
-
-    try {
-      await sendEmail(result[0], "manual");
-      res.json({ message: `📧 Email sent to ${email}` });
-    } catch (e) {
-      res.status(500).json({ error: "❌ Failed to send email: " + e.message });
-    }
-  });
-});
-
-
-
 // ==========================
 // 📋 Get All Students
 // ==========================
 app.get("/api/students", (req, res) => {
-  db.query("SELECT * FROM students", (err, rows) => { // fixed typo: stuvdents → students
+  db.query("SELECT * FROM students", (err, rows) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
+
     res.json(
       rows.map((r) => ({
         id: r.id,
@@ -95,20 +68,9 @@ app.get("/api/students", (req, res) => {
         studentEmail: r.student_email,
         supervisorName: r.supervisor_name,
         supervisorEmail: r.supervisor_email,
-        studyStartDate: r.study_start_date,
+        studyStartDate: r.study_start_date ? r.study_start_date.toISOString().split("T")[0] : null,
       }))
     );
-  });
-});
-
-// ==========================
-// 🗑️ Delete Student
-// ==========================
-app.delete("/api/students/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM students WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ error: "Delete failed" });
-    res.json({ message: "🗑️ Student deleted successfully!" });
   });
 });
 
@@ -139,60 +101,106 @@ app.put("/api/students/:id", (req, res) => {
 });
 
 // ==========================
-// ✉️ Send Email Function
+// 🗑️ Delete Student
 // ==========================
-async function sendEmail(student, type) {
-  const { student_name, student_email, supervisor_name, supervisor_email, study_start_date } = student;
-  const message = `
-Hello ${student_name},
+app.delete("/api/students/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM students WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ error: "Delete failed" });
+    res.json({ message: "🗑️ Student deleted successfully!" });
+  });
+});
 
-This is your study reminder.
-Study Start Date: ${new Date(study_start_date).toDateString()}
 
-Supervisor: ${supervisor_name}
-Supervisor Email: ${supervisor_email}
+
+
+// ==========================
+// ✉️ Send Email Function 
+// ==========================
+
+async function sendEmail(student) {
+  const { student_name, student_email, supervisor_name, supervisor_email } = student;
+
+  const messageBody = `
+Dear Students and Supervisors,
+
+This is a kind reminder from the Postgraduate Studies (PGS) Office, Shah Abdul Latif University, Khairpur, to submit your research synopsis as per the announced schedule.
+
+All M.Phil./Ph.D. scholars are requested to ensure submission by deadline to avoid any delay in processing.
+
+If you have already submitted your synopsis, please ignore this email.
+
+Thank you for your cooperation.
+
+Best regards,
+Postgraduate Studies (PGS) Office
+SALU Khairpur
   `;
 
   try {
+    // Send email to student
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: student_email,
-      subject: type === "auto" ? "📖 Automatic Study Reminder" : "📖 Study Reminder",
-      text: message,
+      subject: "Reminder: Submission of Research Synopsis",
+      text: messageBody,
     });
 
+    // Send email to supervisor
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: supervisor_email,
-      subject: "👨‍🏫 Student Study Reminder",
-      text: `Hello ${supervisor_name},\n\nYour student ${student_name} received a reminder.\n\n${message}`,
+      subject: "Reminder: Submission of Research Synopsis",
+      text: messageBody,
     });
 
-    console.log(`✅ Email sent to ${student_email} & ${supervisor_email}`);
+    console.log(`✅ Emails sent to ${student_email} & ${supervisor_email}`);
   } catch (e) {
     console.error("❌ Email failed:", e.message);
   }
 }
 
 // ==========================
-// 📩 Send Reminders to All Students
+// 📤 Send Email to Single Student + Supervisor
+// ==========================
+app.post("/api/send-email", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: "⚠️ Email is required!" });
+
+  const query = "SELECT * FROM students WHERE student_email = ?";
+  db.query(query, [email], async (err, result) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (result.length === 0) return res.status(404).json({ error: "Student not found!" });
+
+    try {
+      await sendEmail(result[0]);
+      res.json({ message: `📧 Emails sent to ${email} and their supervisor` });
+    } catch (e) {
+      res.status(500).json({ error: "❌ Failed to send emails: " + e.message });
+    }
+  });
+});
+
+// ==========================
+// 📩 Send Reminders to All Students + Supervisors
 // ==========================
 app.post("/api/send-reminders", (req, res) => {
   db.query("SELECT * FROM students", async (err, students) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
 
-    for (const s of students) await sendEmail(s, "manual");
-    res.json({ message: "📩 Reminder emails sent to all students!" });
+    for (const s of students) await sendEmail(s);
+    res.json({ message: "📩 Reminder emails sent to all students and supervisors!" });
   });
 });
 
 // ==========================
-// ⏰ Auto Cron Job
+// ⏰ Auto Cron Job (every 10 min)
 // ==========================
 cron.schedule("*/10 * * * *", () => {
   db.query("SELECT * FROM students", async (err, students) => {
-    if (err) return;
-    for (const s of students) await sendEmail(s, "auto");
+    if (err) return console.error("Cron DB error:", err);
+    for (const s of students) await sendEmail(s);
   });
 });
 
