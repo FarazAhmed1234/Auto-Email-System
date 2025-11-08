@@ -114,8 +114,8 @@ app.delete("/api/students/:id", (req, res) => {
 
 
 
-// ========================
-// ✉️ Send Email Function 
+// ==========================
+// ✉️ Send mail Function 
 // ==========================
 
 async function sendEmail(student) {
